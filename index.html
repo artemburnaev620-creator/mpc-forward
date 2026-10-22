@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>МПЦ Форвард — Проектирование, монтаж и обслуживание слаботочных систем</title>
+<meta name="description" content="ООО «МПЦ Форвард»: проектирование, монтаж и обслуживание слаботочных систем — видеонаблюдение, СКУД, СКС, пожарная и охранная сигнализация, домофония.">
+<style>
+  :root{
+    --bg:#0b1220;
+    --bg-soft:#111a2e;
+    --card:#16223a;
+    --line:rgba(255,255,255,.08);
+    --text:#e8eef9;
+    --muted:#9fb0cc;
+    --accent:#2f8bff;
+    --accent-2:#00d1b2;
+    --radius:16px;
+    --max:1180px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:14px 26px;border-radius:999px;font-weight:600;
+    border:none;cursor:pointer;transition:.25s ease;font-size:15px;
+  }
+  .btn-primary{
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    color:#04101f;
+  }
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(47,139,255,.35)}
+  .btn-ghost{
+    background:transparent;color:var(--text);border:1px solid var(--line);
+  }
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* HEADER */
+  header{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    backdrop-filter:blur(14px);
+    background:rgba(11,18,32,.75);
+    border-bottom:1px solid transparent;
+    transition:.3s;
+  }
+  header.scrolled{border-bottom-color:var(--line);background:rgba(11,18,32,.92)}
+  .nav{
+    display:flex;align-items:center;justify-content:space-between;
+    height:74px;
+  }
+  .logo{display:flex;align-items:center;gap:12px;font-weight:800;font-size:18px;letter-spacing:.3px}
+  .logo-mark{
+    width:38px;height:38px;border-radius:10px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    display:grid;place-items:center;color:#04101f;font-weight:900;font-size:16px;
+  }
+  .logo small{display:block;font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.6px}
+  nav.links{display:flex;gap:32px}
+  nav.links a{font-size:15px;color:var(--muted);transition:.2s}
+  nav.links a:hover{color:var(--text)}
+  .header-cta{display:flex;align-items:center;gap:16px}
+  .phone{font-weight:700;font-size:15px;white-space:nowrap}
+  .burger{display:none;background:none;border:none;color:var(--text);cursor:pointer;padding:8px}
+  .burger span{display:block;width:24px;height:2px;background:currentColor;margin:5px 0;transition:.3s}
+
+  /* HERO */
+  .hero{
+    position:relative;padding:170px 0 110px;
+    background:
+      radial-gradient(900px 500px at 80% -10%, rgba(47,139,255,.22), transparent 60%),
+      radial-gradient(700px 500px at 10% 20%, rgba(0,209,178,.14), transparent 60%);
+    overflow:hidden;
+  }
+  .hero::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size:56px 56px;
+    mask-image:radial-gradient(ellipse at 50% 0%, #000 30%, transparent 75%);
+  }
+  .hero-grid{position:relative;z-index:2;display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
+  .badge{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:8px 16px;border-radius:999px;font-size:13px;font-weight:600;
+    background:rgba(47,139,255,.12);border:1px solid rgba(47,139,255,.35);
+    color:#a9cbff;margin-bottom:24px;
+  }
+  .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--accent-2);box-shadow:0 0 10px var(--accent-2)}
+  h1{
+    font-size:clamp(34px,4.4vw,56px);line-height:1.1;font-weight:800;
+    letter-spacing:-1px;margin-bottom:24px;
+  }
+  h1 .grad{
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p.lead{font-size:18px;color:var(--muted);max-width:560px;margin-bottom:36px}
+  .hero-actions{display:flex;gap:16px;flex-wrap:wrap}
+
+  .hero-card{
+    background:linear-gradient(160deg, var(--card), var(--bg-soft));
+    border:1px solid var(--line);
+    border-radius:24px;padding:32px;
+    box-shadow:0 30px 80px rgba(0,0,0,.45);
+  }
+  .hero-card h3{font-size:16px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:20px;font-weight:600}
+  .hero-list{list-style:none;display:grid;gap:14px}
+  .hero-list li{display:flex;gap:12px;align-items:flex-start;font-size:15px}
+  .hero-list .ico{
+    flex:0 0 26px;height:26px;border-radius:8px;
+    background:rgba(0,209,178,.14);color:var(--accent-2);
+    display:grid;place-items:center;font-size:14px;font-weight:700;
+  }
+
+  /* STATS */
+  .stats{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bg-soft)}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;padding:40px 0}
+  .stat{text-align:center}
+  .stat b{display:block;font-size:36px;font-weight:800;background:linear-gradient(135deg,#fff,#9fb0cc);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat span{color:var(--muted);font-size:14px}
+
+  /* SECTIONS */
+  section{padding:100px 0}
+  .sec-head{max-width:640px;margin-bottom:56px}
+  .sec-head .kicker{
+    color:var(--accent-2);font-weight:700;letter-spacing:2px;
+    font-size:13px;text-transform:uppercase;margin-bottom:14px;display:block;
+  }
+  .sec-head h2{font-size:clamp(28px,3.2vw,40px);line-height:1.15;letter-spacing:-.5px;margin-bottom:16px}
+  .sec-head p{color:var(--muted);font-size:17px}
+
+  /* SERVICES */
+  .services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .service{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:30px;transition:.3s ease;position:relative;overflow:hidden;
+  }
+  .service::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:3px;
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));
+    transform:scaleX(0);transform-origin:left;transition:.35s;
+  }
+  .service:hover{transform:translateY(-6px);border-color:rgba(47,139,255,.35);box-shadow:0 20px 40px rgba(0,0,0,.35)}
+  .service:hover::before{transform:scaleX(1)}
+  .service .ico{
+    width:52px;height:52px;border-radius:14px;
+    background:linear-gradient(135deg, rgba(47,139,255,.18), rgba(0,209,178,.12));
+    display:grid;place-items:center;margin-bottom:20px;color:var(--accent);
+  }
+  .service .ico svg{width:26px;height:26px}
+  .service h3{font-size:18px;margin-bottom:10px}
+  .service p{color:var(--muted);font-size:15px}
+
+  /* PROCESS */
+  .process{background:var(--bg-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;position:relative}
+  .step{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);padding:28px;position:relative}
+  .step .num{
+    font-size:14px;font-weight:800;color:var(--accent-2);
+    letter-spacing:2px;margin-bottom:14px;
+  }
+  .step h3{font-size:17px;margin-bottom:8px}
+  .step p{font-size:14px;color:var(--muted)}
+
+  /* WHY US */
+  .why-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+  .why-item{display:flex;gap:18px;padding:26px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius)}
+  .why-item .ico{
+    flex:0 0 46px;height:46px;border-radius:12px;
+    background:rgba(47,139,255,.15);color:var(--accent);
+    display:grid;place-items:center;
+  }
+  .why-item h3{font-size:17px;margin-bottom:6px}
+  .why-item p{color:var(--muted);font-size:14.5px}
+
+  /* CTA / CONTACT */
+  .contact{
+    background:
+      radial-gradient(700px 400px at 85% 0%, rgba(47,139,255,.18), transparent 60%),
+      radial-gradient(600px 400px at 0% 100%, rgba(0,209,178,.12), transparent 60%);
+  }
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+  .contact-info h2{font-size:clamp(28px,3.2vw,40px);line-height:1.15;margin-bottom:20px;letter-spacing:-.5px}
+  .contact-info p{color:var(--muted);font-size:17px;margin-bottom:32px}
+  .contact-list{display:grid;gap:20px}
+  .contact-list .row{display:flex;gap:16px;align-items:flex-start}
+  .contact-list .ico{
+    flex:0 0 44px;height:44px;border-radius:12px;
+    background:linear-gradient(135deg, rgba(47,139,255,.2), rgba(0,209,178,.14));
+    color:var(--accent);display:grid;place-items:center;
+  }
+  .contact-list .label{font-size:13px;color:var(--muted);margin-bottom:2px}
+  .contact-list .value{font-size:16px;font-weight:600}
+
+  form.contact-form{
+    background:var(--card);border:1px solid var(--line);border-radius:22px;padding:32px;
+    box-shadow:0 24px 60px rgba(0,0,0,.4);
+  }
+  form.contact-form h3{font-size:20px;margin-bottom:8px}
+  form.contact-form .sub{color:var(--muted);font-size:14px;margin-bottom:24px}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:8px;font-weight:500}
+  .field input,.field textarea,.field select{
+    width:100%;background:var(--bg);border:1px solid var(--line);
+    border-radius:12px;padding:13px 16px;color:var(--text);font-size:15px;
+    font-family:inherit;transition:.2s;outline:none;
+  }
+  .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(47,139,255,.18)}
+  .field textarea{resize:vertical;min-height:96px}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  form .btn{width:100%;justify-content:center;margin-top:8px}
+  .form-note{font-size:12px;color:var(--muted);margin-top:14px;text-align:center}
+  .form-success{
+    display:none;text-align:center;padding:20px;border-radius:12px;
+    background:rgba(0,209,178,.12);border:1px solid rgba(0,209,178,.35);
+    color:var(--accent-2);font-weight:600;margin-top:14px;
+  }
+  .form-success.show{display:block}
+
+  /* FOOTER */
+  footer{background:var(--bg-soft);border-top:1px solid var(--line);padding:56px 0 32px}
+  .footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:40px;margin-bottom:40px}
+  .footer-grid .logo{margin-bottom:16px}
+  .footer-grid p{color:var(--muted);font-size:14px;max-width:340px}
+  .footer-grid h4{font-size:14px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text);margin-bottom:18px}
+  .footer-grid ul{list-style:none;display:grid;gap:10px}
+  .footer-grid ul a{color:var(--muted);font-size:14.5px;transition:.2s}
+  .footer-grid ul a:hover{color:var(--accent-2)}
+  .copyright{
+    border-top:1px solid var(--line);padding-top:26px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    color:var(--muted);font-size:13.5px;
+  }
+
+  /* ANIMATION */
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease, transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  /* RESPONSIVE */
+  @media(max-width:980px){
+    .hero-grid{grid-template-columns:1fr;gap:40px}
+    .services-grid{grid-template-columns:repeat(2,1fr)}
+    .steps{grid-template-columns:repeat(2,1fr)}
+    .contact-grid{grid-template-columns:1fr;gap:40px}
+    .footer-grid{grid-template-columns:1fr 1fr}
+    nav.links{display:none}
+    nav.links.open{
+      display:flex;flex-direction:column;gap:0;
+      position:absolute;top:74px;left:0;right:0;
+      background:var(--bg-soft);border-bottom:1px solid var(--line);padding:12px 24px 24px;
+    }
+    nav.links.open a{padding:14px 0;font-size:16px;border-bottom:1px solid var(--line)}
+    .burger{display:block}
+    .header-cta .phone{display:none}
+  }
+  @media(max-width:620px){
+    section{padding:70px 0}
+    .hero{padding:140px 0 80px}
+    .services-grid,.why-grid,.steps,.stats-grid{grid-template-columns:1fr}
+    .stats-grid{gap:28px;padding:32px 0}
+    .field-row{grid-template-columns:1fr}
+    .footer-grid{grid-template-columns:1fr}
+    .hero-actions .btn{width:100%;justify-content:center}
+  }
+</style>
+</head>
+<body>
+
+<header id="header">
+  <div class="wrap nav">
+    <a href="#top" class="logo">
+      <div class="logo-mark">М</div>
+      <div>МПЦ Форвард<small>слаботочные системы</small></div>
+    </a>
+    <nav class="links" id="navLinks">
+      <a href="#services">Услуги</a>
+      <a href="#process">Как работаем</a>
+      <a href="#why">Почему мы</a>
+      <a href="#contact">Контакты</a>
+    </nav>
+    <div class="header-cta">
+      <a class="phone" href="tel:+79218672133">+7 (921) 867-21-33</a>
+      <a href="#contact" class="btn btn-primary">Оставить заявку</a>
+      <button class="burger" id="burger" aria-label="Меню"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="badge"><span class="dot"></span>Проектирование · Монтаж · Обслуживание</div>
+        <h1>Слаботочные системы <span class="grad">под ключ</span> для бизнеса и объектов</h1>
+        <p class="lead">
+          ООО «МПЦ Форвард» — комплексные решения по слаботочным системам:
+          от проектирования до сервисного обслуживания. Работаем с новыми объектами
+          и модернизируем действующие.
+        </p>
+        <div class="hero-actions">
+          <a href="#contact" class="btn btn-primary">Получить консультацию</a>
+          <a href="#services" class="btn btn-ghost">Наши услуги</a>
+        </div>
+      </div>
+      <div class="hero-card">
+        <h3>Что мы делаем</h3>
+        <ul class="hero-list">
+          <li><span class="ico">✓</span> Системы видеонаблюдения и охранного телевидения</li>
+          <li><span class="ico">✓</span> СКУД — контроль и управление доступом</li>
+          <li><span class="ico">✓</span> СКС — структурированные кабельные сети</li>
+          <li><span class="ico">✓</span> Пожарная и охранная сигнализация</li>
+          <li><span class="ico">✓</span> Домофония, аудио и оповещение</li>
+          <li><span class="ico">✓</span> Сервис и техническое обслуживание</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="wrap stats-grid">
+      <div class="stat reveal"><b data-count="12">0</b><span>лет опыта</span></div>
+      <div class="stat reveal"><b data-count="350" data-suffix="+">0</b><span>реализованных объектов</span></div>
+      <div class="stat reveal"><b data-count="100" data-suffix="%">0</b><span>соблюдение сроков</span></div>
+      <div class="stat reveal"><b data-count="24" data-suffix="/7">0</b><span>поддержка</span></div>
+    </div>
+  </div>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="kicker">Наши услуги</span>
+        <h2>Полный цикл работ по слаботочным системам</h2>
+        <p>Проектируем, монтируем и обслуживаем инженерные системы любой сложности — от небольшого офиса до крупного производственного комплекса.</p>
+      </div>
+      <div class="services-grid">
+        <div class="service reveal">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 10l6-3v10l-6-3z"/></svg>
+          </div>
+          <h3>Видеонаблюдение</h3>
+          <p>Проектирование и монтаж систем видеонаблюдения, IP-камер, видеосерверов и удалённого доступа.</p>
+        </div>
+        <div class="service reveal">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>
+          </div>
+          <h3>СКУД</h3>
+          <p>Контроль и управление доступом: турникеты, считыватели, интеграция с учётом рабочего времени.</p>
+        </div>
+        <div class="service reveal">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="8" cy="6" r="1.6" fill="currentColor"/><circle cx="16" cy="12" r="1.6" fill="currentColor"/><circle cx="10" cy="18" r="1.6" fill="currentColor"/></svg>
+          </div>
+          <h3>СКС и локальные сети</h3>
+          <p>Структурированные кабельные системы, серверные шкафы, Wi-Fi и СКС-инфраструктура под ключ.</p>
+        </div>
+        <div class="service reveal">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2c3.3 4.4 6 7 6 11a6 6 0 1 1-12 0c0-4 2.7-6.6 6-11z"/></svg>
+          </div>
+          <h3>Пожарная сигнализация</h3>
+          <p>АПС и СОУЭ: проектирование, монтаж, пусконаладка и сдача объектов надзорным органам.</p>
+        </div>
+        <div class="service reveal">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l8 4v5c0 5-3.4 8.2-8 9-4.6-.8-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+          </div>
+          <h3>Охранная сигнализация</h3>
+          <p>Охранные системы, тревожные кнопки, датчики и вывод на пульт централизованного наблюдения.</p>
+        </div>
+        <div class="service reveal">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4v10"/><circle cx="12" cy="17" r="3"/><path d="M6 8a8 8 0 0 0 0 8M18 8a8 8 0 0 1 0 8"/></svg>
+          </div>
+          <h3>Домофония и оповещение</h3>
+          <p>Домофоны, аудио- и видеодомофония, системы речевого оповещения и музыкального фона.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="process" id="process">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="kicker">Как мы работаем</span>
+        <h2>Прозрачный процесс от заявки до сервиса</h2>
+        <p>Каждый этап согласовывается с заказчиком — вы всегда знаете, что происходит на объекте.</p>
+      </div>
+      <div class="steps">
+        <div class="step reveal">
+          <div class="num">01</div>
+          <h3>Заявка и выезд</h3>
+          <p>Уточняем задачи, выезжаем на объект и проводим обследование.</p>
+        </div>
+        <div class="step reveal">
+          <div class="num">02</div>
+          <h3>Проект и смета</h3>
+          <p>Разрабатываем техническое решение, проект и прозрачную смету.</p>
+        </div>
+        <div class="step reveal">
+          <div class="num">03</div>
+          <h3>Монтаж и наладка</h3>
+          <p>Выполняем монтаж, пусконаладку и сдаём систему в эксплуатацию.</p>
+        </div>
+        <div class="step reveal">
+          <div class="num">04</div>
+          <h3>Сервис</h3>
+          <p>Обеспечиваем техническое обслуживание и поддержку 24/7.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY US -->
+  <section id="why">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="kicker">Почему МПЦ Форвард</span>
+        <h2>Надёжный подрядчик для ваших объектов</h2>
+      </div>
+      <div class="why-grid">
+        <div class="why-item reveal">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l8 4v5c0 5-3.4 8.2-8 9-4.6-.8-8-4-8-9V7l8-4z"/></svg>
+          </div>
+          <div>
+            <h3>Собственные специалисты</h3>
+            <p>Штатные проектировщики и монтажники — без субподряда и потери качества.</p>
+          </div>
+        </div>
+        <div class="why-item reveal">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          </div>
+          <div>
+            <h3>Соблюдение сроков</h3>
+            <p>Работаем по графику, согласованному с заказчиком, без срывов поставок.</p>
+          </div>
+        </div>
+        <div class="why-item reveal">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h10M4 17h7"/></svg>
+          </div>
+          <div>
+            <h3>Комплексный подход</h3>
+            <p>Проектирование, монтаж и обслуживание слаботочных систем в одной компании.</p>
+          </div>
+        </div>
+        <div class="why-item reveal">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.6 6.6L21 9.5l-5 4.4L17.5 21 12 17.3 6.5 21 8 13.9 3 9.5l6.4-.9L12 2z"/></svg>
+          </div>
+          <div>
+            <h3>Гарантия и сервис</h3>
+            <p>Гарантия на оборудование и работы, оперативная техподдержка и выезд инженера.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <div class="wrap contact-grid">
+      <div class="contact-info reveal">
+        <span class="kicker" style="color:var(--accent-2);font-weight:700;letter-spacing:2px;font-size:13px;text-transform:uppercase;display:block;margin-bottom:14px;">Контакты</span>
+        <h2>Обсудим ваш проект?</h2>
+        <p>Оставьте заявку — наш инженер свяжется с вами, уточнит задачи и предложит оптимальное решение.</p>
+
+        <div class="contact-list">
+          <div class="row">
+            <div class="ico">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.9 2.2z"/></svg>
+            </div>
+            <div>
+              <div class="label">Телефон</div>
+              <a class="value" href="tel:+79218672133">+7 (921) 867-21-33</a>
+            </div>
+          </div>
+          <div class="row">
+            <div class="ico">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+            </div>
+            <div>
+              <div class="label">E-mail</div>
+              <a class="value" href="mailto:info@mpc-forward.ru">info@mpc-forward.ru</a>
+            </div>
+          </div>
+          <div class="row">
+            <div class="ico">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 6-9 12-9 12S3 16 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div>
+              <div class="label">Адрес</div>
+              <div class="value">198323, Санкт-Петербург, Красносельское (Горелово) ш., д. 7, литер А</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <form class="contact-form reveal" id="contactForm" novalidate>
+        <h3>Оставьте заявку</h3>
+        <p class="sub">Ответим в течение рабочего дня и бесплатно проконсультируем.</p>
+
+        <div class="field">
+          <label for="name">Ваше имя *</label>
+          <input type="text" id="name" name="name" placeholder="Иван Иванов" required>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="phone">Телефон *</label>
+            <input type="tel" id="phone" name="phone" placeholder="+7 (___) ___-__-__" required>
+          </div>
+          <div class="field">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" name="email" placeholder="mail@example.com">
+          </div>
+        </div>
+        <div class="field">
+          <label for="service">Интересующая услуга</label>
+          <select id="service" name="service">
+            <option value="">Выберите услугу</option>
+            <option>Видеонаблюдение</option>
+            <option>СКУД</option>
+            <option>СКС и локальные сети</option>
+            <option>Пожарная сигнализация</option>
+            <option>Охранная сигнализация</option>
+            <option>Домофония и оповещение</option>
+            <option>Обслуживание систем</option>
+            <option>Другое</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="message">Комментарий</label>
+          <textarea id="message" name="message" placeholder="Кратко опишите задачу или объект"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Отправить заявку</button>
+        <p class="form-note">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных.</p>
+        <div class="form-success" id="formSuccess">Спасибо! Ваша заявка принята — мы свяжемся с вами в ближайшее время.</div>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a href="#top" class="logo">
+          <div class="logo-mark">М</div>
+          <div>МПЦ Форвард<small>слаботочные системы</small></div>
+        </a>
+        <p>ООО «МПЦ Форвард» — проектирование, монтаж и обслуживание слаботочных систем для бизнеса и объектов любой сложности.</p>
+      </div>
+      <div>
+        <h4>Услуги</h4>
+        <ul>
+          <li><a href="#services">Видеонаблюдение</a></li>
+          <li><a href="#services">СКУД</a></li>
+          <li><a href="#services">СКС и сети</a></li>
+          <li><a href="#services">Пожарная сигнализация</a></li>
+          <li><a href="#services">Охранная сигнализация</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Контакты</h4>
+        <ul>
+          <li><a href="tel:+79218672133">+7 (921) 867-21-33</a></li>
+          <li><a href="mailto:info@mpc-forward.ru">info@mpc-forward.ru</a></li>
+          <li>198323, Санкт-Петербург, Красносельское (Горелово) ш., д. 7, литер А</li>
+        </ul>
+      </div>
+    </div>
+    <div class="copyright">
+      <span>© <span id="year"></span> ООО «МПЦ Форвард». Все права защищены.</span>
+      <span>Проектирование · Монтаж · Обслуживание слаботочных систем</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Год в футере
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Прозрачность хедера при скролле
+  const header = document.getElementById('header');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // Мобильное меню
+  const burger = document.getElementById('burger');
+  const navLinks = document.getElementById('navLinks');
+  burger.addEventListener('click', () => navLinks.classList.toggle('open'));
+  navLinks.querySelectorAll('a').forEach(a =>
+    a.addEventListener('click', () => navLinks.classList.remove('open'))
+  );
+
+  // Анимация появления
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // Счётчики в блоке статистики
+  const counters = document.querySelectorAll('[data-count]');
+  const counterIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const target = +el.dataset.count;
+      const suffix = el.dataset.suffix || '';
+      const dur = 1400;
+      const start = performance.now();
+      const tick = (now) => {
+        const p = Math.min((now - start) / dur, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(target * eased) + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+      counterIO.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(c => counterIO.observe(c));
+
+  // Отправка формы (демо)
+  const form = document.getElementById('contactForm');
+  const success = document.getElementById('formSuccess');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = form.name.value.trim();
+    const phone = form.phone.value.trim();
+    if (!name || !phone) {
+      alert('Пожалуйста, заполните имя и телефон.');
+      return;
+    }
+    // Здесь можно подключить реальную отправку (fetch на backend/сервис)
+    success.classList.add('show');
+    form.querySelector('button[type=submit]').disabled = true;
+    form.querySelector('button[type=submit]').textContent = 'Отправлено';
+  });
+</script>
+
+</body>
+</html>
