@@ -513,7 +513,7 @@
         </div>
       </div>
 
-      <form class="contact-form reveal" id="contactForm" novalidate>
+      <form class="contact-form" id="contactForm" action="https://formspree.io/f/myeeworb" method="POST">
         <h3>Оставьте заявку</h3>
         <p class="sub">Ответим в течение рабочего дня и бесплатно проконсультируем.</p>
 
@@ -645,21 +645,57 @@
   }, { threshold: 0.5 });
   counters.forEach(c => counterIO.observe(c));
 
-  // Отправка формы (демо)
+  // Отправка формы через Formspree
   const form = document.getElementById('contactForm');
   const success = document.getElementById('formSuccess');
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
+  const submitBtn = form.querySelector('button[type=submit]');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault(); // Останавливаем обычную перезагрузку страницы
+    
     const name = form.name.value.trim();
     const phone = form.phone.value.trim();
     if (!name || !phone) {
       alert('Пожалуйста, заполните имя и телефон.');
       return;
     }
-    // Здесь можно подключить реальную отправку (fetch на backend/сервис)
-    success.classList.add('show');
-    form.querySelector('button[type=submit]').disabled = true;
-    form.querySelector('button[type=submit]').textContent = 'Отправлено';
+
+    // Меняем текст кнопки, пока идет отправка
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Отправка...';
+    submitBtn.disabled = true;
+
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        // Успешно отправлено
+        success.classList.add('show');
+        form.reset(); // Очищаем поля
+        submitBtn.textContent = 'Отправлено';
+        setTimeout(() => {
+          success.classList.remove('show');
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+        }, 5000); // Через 5 секунд возвращаем кнопку в исходное состояние
+      } else {
+        alert('Произошла ошибка при отправке. Попробуйте позже.');
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      }
+    } catch (error) {
+      alert('Ошибка сети. Проверьте интернет-соединение.');
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
+    }
   });
 </script>
 
